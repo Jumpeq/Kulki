@@ -15,8 +15,9 @@ namespace Kulki
     {
         private Kulka[] kulka;
         private Thread[] Threads;
+
         public Form1()
-        {            
+        {
             InitializeComponent();
             kulka = new Kulka[6];
             Threads = new Thread[7];
@@ -29,8 +30,8 @@ namespace Kulki
             kulka[4] = new Kulka(new PointF(535, 280), Brushes.Red);
             kulka[5] = new Kulka(new PointF(630, 430), Brushes.Red);
 
-           
-            
+
+
         }
 
 
@@ -46,6 +47,24 @@ namespace Kulki
 
             //Thread.Sleep(2000);
             kulka[0].ZmienY(400);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (Threads[0].ThreadState.Equals(ThreadState.Unstarted))
+            {
+                for (int i = 0; i < 6; ++i) Threads[i].Start(kulka[i]);
+            }
+            else if (Threads[0].ThreadState.Equals(ThreadState.Running) ||
+                     Threads[0].ThreadState.Equals(ThreadState.WaitSleepJoin))
+            {
+                //nic nie rob
+            }
+            else
+            {
+                for (int i = 0; i < 7; ++i) Threads[i].Resume();
+
+            }
         }
     }
 }
