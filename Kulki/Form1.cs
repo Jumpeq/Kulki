@@ -8,10 +8,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MaterialSkin;
 
 namespace Kulki
 {
-    public partial class Form1 : Form
+    public partial class Form1 : MaterialSkin.Controls.MaterialForm
     {
         private Random losuj;
         private Kulka[] kulka;
@@ -23,6 +24,10 @@ namespace Kulki
         public Form1()
         {
             InitializeComponent();
+            //var skinManager = MaterialSkinManager.Instance;
+            //skinManager.AddFormToManage(this);
+            //skinManager.Theme = MaterialSkinManager.Themes.DARK;
+            //skinManager.ColorScheme = new ColorScheme(Primary.BlueGrey800, Primary.BlueGrey900, Primary.BlueGrey500, Accent.LightBlue200, TextShade.WHITE);
             losuj = new Random();
             kulka = new Kulka[12];
             Threads = new Thread[13];
