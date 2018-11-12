@@ -70,20 +70,16 @@ namespace Kulki
                                 {
                                     ((Kulka)a).Temp = ((Kulka)a).Kat;
                                     ((Kulka)a).Kat = kulka[i].Kat;
+                                    ((Kulka)a).Kolor = kulka[i].Kolor;
                                 }
                                 else
                                 {
                                     ((Kulka)a).Kat = kulka[i].Temp;
                                 }
                             }
-                            //if (kulka[i].Kolor == Brushes.Black)
-                            //{
-                            //    ((Kulka)a).Kolor = Brushes.Black;
-                            //}
                         }
                     }
                 }
-
                 else
                 {
                     try { bariera1.SignalAndWait(); }

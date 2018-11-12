@@ -40,6 +40,10 @@ namespace Kulki
             this.kat = kat;
             this.temp = kat;
         }
+        public Kulka(Brush kolor)
+        {
+            this.kolor = kolor;
+        }
         public void zmienWsp()
         {
             //zmiana katow
