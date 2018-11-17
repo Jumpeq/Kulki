@@ -13,68 +13,68 @@ namespace Kulki
 {
     public partial class Form1 : Form
     {
-        private Random losuj;
-        private Kulka[] kulka;
+        private Random random;
+        private Ball[] ball;
         private Thread[] Threads;
         private object o;
-        private Barrier bariera1;
-        private Barrier bariera2;
+        private Barrier barier1;
+        private Barrier barier2;
 
         public Form1()
         {
             InitializeComponent();
-            losuj = new Random();
-            kulka = new Kulka[12];
+            random = new Random();
+            ball = new Ball[12];
             Threads = new Thread[13];
             o = new object();
-            bariera2 = new Barrier(13);
-            bariera1 = new Barrier(13, (b) => { pictureBox1.Invalidate(); });
+            barier2 = new Barrier(13);
+            barier1 = new Barrier(13, (b) => { pictureBox1.Invalidate(); });
 
-            for (int i = 0; i < 13; ++i) Threads[i] = new Thread(odswiez);
-            kulka[0] = new Kulka(new PointF(100, 100), Brushes.Blue, losuj.Next(360));
-            kulka[1] = new Kulka(new PointF(100, 400), Brushes.Gold, losuj.Next(360));
-            kulka[2] = new Kulka(new PointF(700, 400), Brushes.Black, losuj.Next(360));
-            kulka[3] = new Kulka(new PointF(400, 400), Brushes.Red, losuj.Next(360));
-            kulka[4] = new Kulka(new PointF(700, 100), Brushes.Green, losuj.Next(360));
-            kulka[5] = new Kulka(new PointF(250, 320), Brushes.Purple, losuj.Next(360));
-            kulka[6] = new Kulka(new PointF(400, 100), Brushes.Aqua, losuj.Next(360));
-            kulka[7] = new Kulka(new PointF(550, 320), Brushes.DarkGray, losuj.Next(360));
-            kulka[8] = new Kulka(new PointF(250, 180), Brushes.DarkOrange, losuj.Next(360));
-            kulka[9] = new Kulka(new PointF(550, 180), Brushes.Fuchsia, losuj.Next(360));
-            kulka[10] = new Kulka(new PointF(50, 250), Brushes.DarkGoldenrod, losuj.Next(360));
-            kulka[11] = new Kulka(new PointF(800, 250), Brushes.PaleGreen, losuj.Next(360));
+            for (int i = 0; i < 13; ++i) Threads[i] = new Thread(refresh);
+            ball[0] = new Ball(new PointF(100, 100), Brushes.Blue, random.Next(360));
+            ball[1] = new Ball(new PointF(100, 400), Brushes.Gold, random.Next(360));
+            ball[2] = new Ball(new PointF(700, 400), Brushes.Black, random.Next(360));
+            ball[3] = new Ball(new PointF(400, 400), Brushes.Red, random.Next(360));
+            ball[4] = new Ball(new PointF(700, 100), Brushes.Green, random.Next(360));
+            ball[5] = new Ball(new PointF(250, 320), Brushes.Purple, random.Next(360));
+            ball[6] = new Ball(new PointF(400, 100), Brushes.Aqua, random.Next(360));
+            ball[7] = new Ball(new PointF(550, 320), Brushes.DarkGray, random.Next(360));
+            ball[8] = new Ball(new PointF(250, 180), Brushes.DarkOrange, random.Next(360));
+            ball[9] = new Ball(new PointF(550, 180), Brushes.Fuchsia, random.Next(360));
+            ball[10] = new Ball(new PointF(50, 250), Brushes.DarkGoldenrod, random.Next(360));
+            ball[11] = new Ball(new PointF(800, 250), Brushes.PaleGreen, random.Next(360));
         }
-        public static double odleglosc(PointF p, PointF q)
+        public static double Distance(PointF p, PointF q)
         {
             double a = p.X - q.X;
             double b = p.Y - q.Y;
             double distance = Math.Sqrt(a * a + b * b);
             return distance;
         }
-        private void odswiez(object a)
+        private void refresh(object a)
         {
             while (true)
             {
-                if (a is Kulka)
+                if (a is Ball)
                 {
-                    ((Kulka)a).zmienWsp();
-                    try { bariera1.SignalAndWait(); }
+                    ((Ball)a).ChangeCoord();
+                    try { barier1.SignalAndWait(); }
                     catch (BarrierPostPhaseException e) { }
                     for (int i = 0; i < 12; ++i)
                     {
-                        if (odleglosc(kulka[i].Srodek, ((Kulka)a).Srodek) < 50 && odleglosc(kulka[i].Srodek, ((Kulka)a).Srodek) != 0)
+                        if (Distance(ball[i].Middle, ((Ball)a).Middle) < 50 && Distance(ball[i].Middle, ((Ball)a).Middle) != 0)
                         {
                             lock (o)
                             {
-                                if (((Kulka)a).Kat != kulka[i].Kat)
+                                if (((Ball)a).Angle != ball[i].Angle)
                                 {
-                                    ((Kulka)a).Temp = ((Kulka)a).Kat;
-                                    ((Kulka)a).Kat = kulka[i].Kat;
-                                    ((Kulka)a).Kolor = kulka[i].Kolor;
+                                    ((Ball)a).AngleTmp = ((Ball)a).Angle;
+                                    ((Ball)a).Angle = ball[i].Angle;
+                                    ((Ball)a).Color = ball[i].Color;
                                 }
                                 else
                                 {
-                                    ((Kulka)a).Kat = kulka[i].Temp;
+                                    ((Ball)a).Angle = ball[i].AngleTmp;
                                 }
                             }
                         }
@@ -82,11 +82,11 @@ namespace Kulki
                 }
                 else
                 {
-                    try { bariera1.SignalAndWait(); }
+                    try { barier1.SignalAndWait(); }
                     catch (BarrierPostPhaseException e) { }
                 }
 
-                bariera2.SignalAndWait();
+                barier2.SignalAndWait();
                 Thread.Sleep(5);
             }
         }
@@ -94,19 +94,19 @@ namespace Kulki
         {
             Graphics g = e.Graphics;
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            for (int i = 0; i < 12; ++i) g.FillEllipse(kulka[i].Kolor, new RectangleF(kulka[i].Wsp.X, kulka[i].Wsp.Y, 50, 50));
+            for (int i = 0; i < 12; ++i) g.FillEllipse(ball[i].Color, new RectangleF(ball[i].Cord.X, ball[i].Cord.Y, 50, 50));
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             if (Threads[0].ThreadState.Equals(ThreadState.Unstarted))
             {
-                for (int i = 0; i < 12; ++i) Threads[i].Start(kulka[i]);
+                for (int i = 0; i < 12; ++i) Threads[i].Start(ball[i]);
                 Threads[12].Start();
             }
             else if (Threads[0].ThreadState.Equals(ThreadState.Running) || Threads[0].ThreadState.Equals(ThreadState.WaitSleepJoin))
             {
-                //nic nie rob
+                
             }
             else
             {
